@@ -1,10 +1,16 @@
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
-from model import NeuralNet  # Ensure you have your model class defined in model.py
+from model import NeuralNet
 from nltk_utils import tokenize, stem, bag_of_words
 import json
 import numpy as np
+
+import os
+
+print("Current directory contents:")
+for file in os.listdir('.'):
+    print(file)
 
 with open('intents.json', 'r') as f:
     intents = json.load(f)
@@ -63,8 +69,7 @@ num_epochs = 1000
 dataset = ChatDataset()
 train_loader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True, num_workers=0)
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-model = NeuralNet(input_size, hidden_size, output_size).to(device)
+model = NeuralNet(input_size, hidden_size, output_size)
 
 # Loss and optimizer
 criterion = nn.CrossEntropyLoss()
@@ -91,7 +96,7 @@ for epoch in range(num_epochs):
 print('Training complete.')
 
 # Save the model
-model_data = {
+data = {
     "model_state": model.state_dict(),
     "input_size": input_size,
     "hidden_size": hidden_size,
@@ -100,5 +105,6 @@ model_data = {
     "tags": tags
 }
 
-torch.save(model_data, "data.pth")
-print(f'Training complete. File saved to data.pth')
+FILE = "data.pth"
+torch.save(data, FILE)
+print(f'Training complete. File saved to {FILE}')

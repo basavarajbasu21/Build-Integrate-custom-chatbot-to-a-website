@@ -1,8 +1,6 @@
 import random
 import json
-
 import torch
-
 from model import NeuralNet
 from nltk_utils import bag_of_words, tokenize
 
@@ -12,7 +10,16 @@ with open('intents.json', 'r') as json_data:
     intents = json.load(json_data)
 
 FILE = "data.pth"
-data = torch.load(FILE)
+try:
+    data = torch.load(FILE, weights_only=True)
+except Exception as e:
+    print(f"Warning: Loading the model with weights_only=True failed: {e}")
+    print("Attempting to load the model with weights_only=False. Ensure the file is from a trusted source.")
+    try:
+        data = torch.load(FILE)
+    except Exception as e:
+        print(f"Error loading the model: {e}")
+        exit()
 
 input_size = data["input_size"]
 hidden_size = data["hidden_size"]
